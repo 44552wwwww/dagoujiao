@@ -145,7 +145,6 @@ const R = {
 };
 const THRESHOLD = 20, WINDOW = 1500, RECOVER = 5000;
 // SOUNDS defined below with real mp3 files
-function getCtx(){ if(!AUDIO_CTX) AUDIO_CTX=new (window.AudioContext||window.webkitAudioContext)(); return AUDIO_CTX; }
 
 // ─── AUDIO ───
 function synth(type) {
@@ -303,19 +302,13 @@ function load() {}
 
 // ─── CUSTOM ───
 function loadImg(type,input) { const f=input.files[0]; if(f) document.getElementById(type+'Img').src=URL.createObjectURL(f); }
-function loadSnd(type,input) { const f=input.files[0]; if(f){ SOUNDS[type].src=URL.createObjectURL(f); } }
+function loadSnd(type,input) { const f=input.files[0]; if(f){ SOUND_SRCS[type]=URL.createObjectURL(f); } }
 
-// Preload real mp3 sounds
-const SOUNDS = {
-  dog: new Audio('/static/sounds/dog.mp3'),
-  chicken: new Audio('/static/sounds/chicken.mp3'),
-  cat: new Audio('/static/sounds/cat.mp3'),
-};
-for(let t in SOUNDS){ SOUNDS[t].preload='auto'; SOUNDS[t].volume=0.8; }
+const SOUND_SRCS = {dog:'/static/sounds/dog.mp3', chicken:'/static/sounds/chicken.mp3', cat:'/static/sounds/cat.mp3'};
 
 function speak(type) {
-  const a = SOUNDS[type].cloneNode();
-  a.volume = 0.8;
+  const a = new Audio(SOUND_SRCS[type]);
+  a.volume = 1.0;
   a.play().catch(()=>{});
 }
 
