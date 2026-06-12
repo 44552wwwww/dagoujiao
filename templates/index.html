@@ -151,22 +151,38 @@ function getCtx(){ if(!AUDIO_CTX) AUDIO_CTX=new (window.AudioContext||window.web
 // ─── AUDIO ───
 function synth(type) {
   const ctx=getCtx();
-  const o=ctx.createOscillator(), g=ctx.createGain();
-  o.connect(g); g.connect(ctx.destination);
   if(type==='dog'){
-    o.type='sawtooth'; o.frequency.setValueAtTime(280,ctx.currentTime);
-    o.frequency.linearRampToValueAtTime(60,ctx.currentTime+0.3);
-    g.gain.setValueAtTime(0.8,ctx.currentTime); g.gain.linearRampToValueAtTime(0,ctx.currentTime+0.35);
-    o.start(); o.stop(ctx.currentTime+0.35);
+    // 狗叫: 低频粗糙，先高后低，短促有力
+    const o=ctx.createOscillator(), g=ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type='sawtooth'; o.frequency.setValueAtTime(400,ctx.currentTime);
+    o.frequency.linearRampToValueAtTime(200,ctx.currentTime+0.08);
+    o.frequency.linearRampToValueAtTime(100,ctx.currentTime+0.2);
+    g.gain.setValueAtTime(0.8,ctx.currentTime);
+    g.gain.linearRampToValueAtTime(0,ctx.currentTime+0.25);
+    o.start(ctx.currentTime); o.stop(ctx.currentTime+0.25);
   } else if(type==='chicken'){
-    o.type='square'; [600,400,800,500].forEach((f,i)=>o.frequency.setValueAtTime(f,ctx.currentTime+i*0.04));
-    g.gain.setValueAtTime(0.5,ctx.currentTime); g.gain.linearRampToValueAtTime(0,ctx.currentTime+0.2);
-    o.start(); o.stop(ctx.currentTime+0.2);
+    // 鸡叫: 短促尖利，多个脉冲
+    for(let i=0;i<4;i++){
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type='square'; o.frequency.setValueAtTime(800,ctx.currentTime+i*0.06);
+      o.frequency.setValueAtTime(600,ctx.currentTime+i*0.06+0.03);
+      g.gain.setValueAtTime(0.3,ctx.currentTime+i*0.06);
+      g.gain.linearRampToValueAtTime(0,ctx.currentTime+i*0.06+0.05);
+      o.start(ctx.currentTime+i*0.06); o.stop(ctx.currentTime+i*0.06+0.05);
+    }
   } else {
-    o.type='sine'; o.frequency.setValueAtTime(400,ctx.currentTime);
-    o.frequency.linearRampToValueAtTime(650,ctx.currentTime+0.12);
-    g.gain.setValueAtTime(0.6,ctx.currentTime); g.gain.linearRampToValueAtTime(0,ctx.currentTime+0.25);
-    o.start(); o.stop(ctx.currentTime+0.25);
+    // 猫叫: 先低后高再低，拉长
+    const o=ctx.createOscillator(), g=ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type='sine'; o.frequency.setValueAtTime(300,ctx.currentTime);
+    o.frequency.linearRampToValueAtTime(600,ctx.currentTime+0.15);
+    o.frequency.linearRampToValueAtTime(300,ctx.currentTime+0.35);
+    g.gain.setValueAtTime(0.5,ctx.currentTime);
+    g.gain.setValueAtTime(0.5,ctx.currentTime+0.1);
+    g.gain.linearRampToValueAtTime(0,ctx.currentTime+0.4);
+    o.start(ctx.currentTime); o.stop(ctx.currentTime+0.4);
   }
 }
 
