@@ -2,244 +2,267 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>大狗叫 🐕</title>
+<title>大狗叫</title>
 <style>
-:root { --bg:#1a1a2e; --card:#16213e; --gold:#f5c518; --pink:#ff6b9d; --green:#4ade80; }
+:root { --bg:#1a1a2e; --gold:#f5c518; --pink:#ff6b9d; --green:#4ade80; --red:#e85d75; --card:#16213e; }
 * { margin:0; padding:0; box-sizing:border-box; }
-body {
-  background: var(--bg); color:#fff;
-  font-family:'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-serif;
-  min-height:100vh; overflow-x:hidden;
-  text-align:center;
-}
-h1 { font-size:2.4em; margin:30px 0 10px; color:var(--gold); letter-spacing:4px; }
-.sub { color:#888; font-size:1em; margin-bottom:40px; }
-.animals { display:flex; justify-content:center; gap:60px; flex-wrap:wrap; padding:20px; }
-.animal { cursor:pointer; transition:all .15s; position:relative; }
-.animal:active { transform:scale(0.9); }
-.animal img {
-  width:200px; height:200px; object-fit:contain;
-  border-radius:24px; background:rgba(255,255,255,0.03);
-  padding:20px; transition:all .15s;
-  user-select:none; -webkit-user-drag:none;
-}
-.animal:hover img { background:rgba(255,255,255,0.06); transform:scale(1.05); }
-.animal .name { font-size:1.4em; font-weight:700; margin-top:10px; }
-.animal .counter { font-size:3em; font-weight:900; margin-top:4px; }
-.dog .name,.dog .counter { color:var(--gold); }
-.chicken .name,.chicken .counter { color:var(--pink); }
-.cat .name,.cat .counter { color:var(--green); }
-.animal .hint { color:#888; font-size:0.8em; margin-top:4px; }
-.bark-effect {
-  position:absolute; font-size:2em; font-weight:900; pointer-events:none;
-  animation:barkUp 1s ease-out forwards;
-}
-@keyframes barkUp {
-  0% { opacity:1; transform:translateY(0) scale(1); }
-  100% { opacity:0; transform:translateY(-80px) scale(1.5); }
-}
-.reset-btn {
-  margin:40px auto; padding:12px 32px; background:rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.1); color:#666; border-radius:8px;
-  cursor:pointer; font-size:0.9em; transition:all .25s;
-}
-.reset-btn:hover { color:#fff; border-color:#fff; }
-.footer { color:#444; font-size:0.75em; margin:40px 0; }
-.footer a { color:#666; text-decoration:none; }
+body { background:var(--bg); color:#fff; font-family:'Segoe UI','Noto Sans SC',sans-serif; min-height:100vh; text-align:center; overflow-x:hidden; }
+.nav { display:flex; background:#0d0d1a; position:sticky; top:0; z-index:100; }
+.nav button { flex:1; padding:18px 10px; background:none; border:none; color:#666; font-size:1.05em; cursor:pointer; transition:all .25s; border-bottom:2px solid transparent; font-family:inherit; }
+.nav button:hover { color:#aaa; }
+.nav button.active { color:var(--gold); border-bottom-color:var(--gold); }
+.wrap { max-width:600px; margin:0 auto; padding:30px 20px 60px; }
+.tab { display:none; } .tab.active { display:block; }
 
-/* Secret cat */
-.secret { position:fixed; bottom:20px; right:20px; width:50px; height:50px; border-radius:50%; background:rgba(255,255,255,0.03); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.5em; transition:all .3s; z-index:100; }
-.secret:hover { background:rgba(255,255,255,0.1); transform:scale(1.2); }
-.secret .badge { position:absolute; top:-8px; right:-8px; background:var(--pink); color:#fff; font-size:0.55em; padding:2px 6px; border-radius:10px; display:none; }
-.secret.found .badge { display:block; }
+.animal-area { position:relative; margin:30px auto; display:inline-block; }
+.animal-img { width:220px; height:220px; object-fit:contain; cursor:pointer; user-select:none; transition:all .08s; -webkit-user-drag:none; border-radius:24px; }
+.animal-img:hover { transform:scale(1.03); }
+.animal-img:active { transform:scale(0.92); }
+.animal-img.dead-img { filter:grayscale(1) brightness(0.5); }
 
-/* Sound upload */
-.upload-section { margin:30px auto; max-width:500px; padding:20px; background:rgba(255,255,255,0.02); border-radius:12px; border:1px dashed rgba(255,255,255,0.1); }
-.upload-section summary { cursor:pointer; color:#888; font-size:0.9em; margin-bottom:12px; }
-.upload-item { display:flex; align-items:center; gap:10px; margin:8px 0; font-size:0.85em; color:#888; }
-.upload-item input { flex:1; padding:6px 10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:#fff; }
-.upload-item input[type="file"] { padding:4px; }
-.upload-item label { width:60px; text-align:right; }
+.counter { font-size:2em; font-weight:900; margin:16px 0; }
+#dogCount { color:var(--gold); } #chickenCount { color:var(--pink); } #catCount { color:var(--green); }
+
+.warn { color:var(--gold); font-size:1em; padding:12px; animation:pulse 0.8s infinite; margin:8px 0; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.hidden { display:none; }
+
+.dead-overlay { padding:30px 20px; }
+.dead-overlay .title { font-size:2em; font-weight:900; color:var(--red); margin:20px 0; }
+.dead-overlay .sub { color:#888; margin-bottom:20px; }
+
+.btn { display:inline-block; padding:14px 36px; background:var(--gold); color:#1a1a24; border:none; border-radius:10px; font-size:1.05em; font-weight:700; cursor:pointer; transition:all .2s; font-family:inherit; }
+.btn:hover { filter:brightness(1.1); transform:translateY(-2px); }
+
+.floats { position:absolute; top:10px; left:50%; transform:translateX(-50%); pointer-events:none; display:flex; flex-direction:column; align-items:center; gap:2px; z-index:10; }
+.float { font-size:1.6em; font-weight:900; animation:floatUp 0.9s ease-out forwards; }
+@keyframes floatUp { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-50px) scale(1.2)} }
+
+.unlock-banner { position:fixed; top:0; left:0; right:0; background:linear-gradient(135deg,var(--gold),var(--green)); color:#1a1a24; padding:18px; font-size:1.3em; font-weight:900; z-index:999; animation:slideDown .5s; text-align:center; }
+@keyframes slideDown { 0%{transform:translateY(-100%)} 100%{transform:translateY(0)} }
+
+.upload-box { background:var(--card); border-radius:14px; padding:18px; margin:24px 0; text-align:left; }
+.upload-box summary { cursor:pointer; color:#888; font-size:0.9em; margin-bottom:10px; }
+.upload-row { display:flex; align-items:center; gap:8px; margin:6px 0; font-size:0.82em; color:#888; }
+.upload-row label { width:50px; text-align:right; flex-shrink:0; }
+.upload-row input[type="file"] { flex:1; }
+
+.footer { color:#444; font-size:0.75em; margin:40px 0 20px; }
 
 @media(max-width:600px) {
-  h1 { font-size:1.6em; }
-  .animals { gap:30px; }
-  .animal img { width:130px; height:130px; padding:10px; }
-  .animal .counter { font-size:2em; }
+  .animal-img { width:160px; height:160px; }
+  .counter { font-size:1.4em; }
+  .nav button { font-size:0.9em; padding:14px 6px; }
 }
 </style>
 </head>
 <body>
 
-<h1>🐕 大 狗 叫 🐔</h1>
-<div class="sub">点狗叫狗 · 点鸡叫鸡 · 看看谁叫得多</div>
+<div class="nav">
+  <button class="active" onclick="switchTab('dog')">🐕 大狗叫</button>
+  <button onclick="switchTab('chicken')">🐔 叮咚鸡</button>
+  <button id="navCat" style="display:none" onclick="switchTab('cat')">🐱 哈基米</button>
+</div>
 
-<div class="animals">
-  <!-- Dog -->
-  <div class="animal dog" onclick="bark('dog')">
-    <img src="/static/images/dog.png" alt="狗" id="dogImg">
-    <div class="name">🐕 狗</div>
-    <div class="counter" id="dogCount">0</div>
-    <div class="hint">点击图片 → 汪汪叫</div>
-  </div>
-
-  <!-- Chicken -->
-  <div class="animal chicken" onclick="bark('chicken')">
-    <img src="/static/images/chicken.svg" alt="鸡" id="chickenImg" onerror="this.onerror=null;this.src='/static/images/chicken.svg'">
-    <div class="name">🐔 鸡</div>
-    <div class="counter" id="chickenCount">0</div>
-    <div class="hint">点击图片 → 咯咯叫</div>
-  </div>
-
-  <!-- Cat (哈基米) -->
-  <div class="animal cat" onclick="bark('cat')">
-    <img src="/static/images/cat.svg" alt="哈基米" id="catImg" onerror="this.onerror=null;this.src='/static/images/cat.svg'">
-    <div class="name">🐱 哈基米</div>
-    <div class="counter" id="catCount">0</div>
-    <div class="hint">点击图片 → 喵喵叫</div>
+<!-- DOG -->
+<div id="tab-dog" class="tab active">
+  <div class="wrap">
+    <div class="animal-area">
+      <img id="dogImg" src="/static/images/dog.svg" class="animal-img" onclick="handleClick('dog')" onerror="this.onerror=null;this.src='/static/images/dog.svg'">
+      <div class="floats" id="dogFloats"></div>
+    </div>
+    <div class="counter">大狗叫了 <span id="dogCount">0</span> 次</div>
+    <div class="warn hidden" id="dogWarn">😰 大狗叫有点不舒服...</div>
+    <div id="dogDead" class="dead-overlay hidden">
+      <div class="title">💀 大狗叫被你叫死了</div>
+      <div class="sub">计数已清零</div>
+      <button class="btn" onclick="revive('dog')">🔄 重新开始</button>
+    </div>
   </div>
 </div>
 
-<!-- Sound upload -->
-<details class="upload-section">
-  <summary>🔊 自定义声音和图片（点击展开）</summary>
-  <div class="upload-item"><label>狗叫声</label><input type="file" accept="audio/*" onchange="loadCustomSound('dog',this)"></div>
-  <div class="upload-item"><label>鸡叫声</label><input type="file" accept="audio/*" onchange="loadCustomSound('chicken',this)"></div>
-  <div class="upload-item"><label>狗图片</label><input type="file" accept="image/*" onchange="loadCustomImage('dog',this)"></div>
-  <div class="upload-item"><label>鸡图片</label><input type="file" accept="image/*" onchange="loadCustomImage('chicken',this)"></div>
-  <p style="color:#666;font-size:0.75em;margin-top:8px;">不传就用默认的</p>
-</details>
-
-<button class="reset-btn" onclick="resetAll()">🔄 重新计数</button>
-
-<!-- Secret cat easter egg -->
-<div class="secret" id="secretCat" onclick="secretMeow()">🐱</div>
-
-<div class="footer">
-  大狗叫 · <span id="totalClicks">共叫了 0 次</span>
-  <br>王微出品
+<!-- CHICKEN -->
+<div id="tab-chicken" class="tab">
+  <div class="wrap">
+    <div class="animal-area">
+      <img id="chickenImg" src="/static/images/chicken.svg" class="animal-img" onclick="handleClick('chicken')" onerror="this.onerror=null;this.src='/static/images/chicken.svg'">
+      <div class="floats" id="chickenFloats"></div>
+    </div>
+    <div class="counter">叮咚鸡叫了 <span id="chickenCount">0</span> 次</div>
+    <div class="warn hidden" id="chickenWarn">😰 叮咚鸡有点不舒服...</div>
+    <div id="chickenDead" class="dead-overlay hidden">
+      <div class="title">💀 叮咚鸡被你叫死了</div>
+      <div class="sub">计数已清零</div>
+      <button class="btn" onclick="revive('chicken')">🔄 重新开始</button>
+    </div>
+  </div>
 </div>
+
+<!-- CAT -->
+<div id="tab-cat" class="tab">
+  <div class="wrap">
+    <div class="animal-area">
+      <img id="catImg" src="/static/images/cat.svg" class="animal-img" onclick="handleClick('cat')" onerror="this.onerror=null;this.src='/static/images/cat.svg'">
+      <div class="floats" id="catFloats"></div>
+    </div>
+    <div class="counter">哈基米叫了 <span id="catCount">0</span> 次</div>
+    <p style="color:#888;font-size:0.85em">哈基米永远不会被叫死 🐱</p>
+  </div>
+</div>
+
+<!-- Upload (all tabs share) -->
+<div class="wrap"><details class="upload-box">
+  <summary>🎨 自定义图片和声音（点开设置）</summary>
+  <div class="upload-row"><label>狗图片</label><input type="file" accept="image/*" onchange="loadImg('dog',this)"></div>
+  <div class="upload-row"><label>狗叫声</label><input type="file" accept="audio/*" onchange="loadSnd('dog',this)"></div>
+  <div class="upload-row"><label>鸡图片</label><input type="file" accept="image/*" onchange="loadImg('chicken',this)"></div>
+  <div class="upload-row"><label>鸡叫声</label><input type="file" accept="audio/*" onchange="loadSnd('chicken',this)"></div>
+  <div class="upload-row"><label>猫图片</label><input type="file" accept="image/*" onchange="loadImg('cat',this)"></div>
+  <div class="upload-row"><label>猫叫声</label><input type="file" accept="audio/*" onchange="loadSnd('cat',this)"></div>
+</details></div>
+
+<div class="footer">王微出品 · 大狗叫</div>
 
 <script>
-let counts = { dog:0, chicken:0, cat:0 };
-let customSounds = { dog:null, chicken:null, cat:null };
-let catFound = false;
+// ─── STATE ───
+const C = { dog:0, chicken:0, cat:0 };
+let catUnlocked = false;
+const R = {
+  dog:{ count:0, timer:null, warned:false, dead:false },
+  chicken:{ count:0, timer:null, warned:false, dead:false }
+};
+const THRESHOLD = 20, WINDOW = 1500, RECOVER = 5000;
+const SND = { dog:null, chicken:null, cat:null };
+const AUDIO_CTX = new (window.AudioContext||window.webkitAudioContext)();
 
-// Audio context
-const ctx = new (window.AudioContext||window.webkitAudioContext)();
-
-// Default bark sound (synthesized)
-function synthBark(type) {
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.connect(gain); gain.connect(ctx.destination);
-  if (type==='dog') {
-    osc.type='sawtooth'; osc.frequency.setValueAtTime(200,ctx.currentTime);
-    osc.frequency.linearRampToValueAtTime(80,ctx.currentTime+0.3);
-    gain.gain.setValueAtTime(0.3,ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(0,ctx.currentTime+0.4);
-    osc.start(); osc.stop(ctx.currentTime+0.4);
-  } else if (type==='chicken') {
-    osc.type='square'; osc.frequency.setValueAtTime(600,ctx.currentTime);
-    osc.frequency.setValueAtTime(400,ctx.currentTime+0.05);
-    osc.frequency.setValueAtTime(800,ctx.currentTime+0.1);
-    osc.frequency.setValueAtTime(500,ctx.currentTime+0.15);
-    gain.gain.setValueAtTime(0.15,ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(0,ctx.currentTime+0.2);
-    osc.start(); osc.stop(ctx.currentTime+0.2);
+// ─── AUDIO ───
+function synth(type) {
+  const o=AUDIO_CTX.createOscillator(), g=AUDIO_CTX.createGain();
+  o.connect(g); g.connect(AUDIO_CTX.destination);
+  if(type==='dog'){
+    o.type='sawtooth'; o.frequency.setValueAtTime(280,AUDIO_CTX.currentTime);
+    o.frequency.linearRampToValueAtTime(60,AUDIO_CTX.currentTime+0.3);
+    g.gain.setValueAtTime(0.3,AUDIO_CTX.currentTime); g.gain.linearRampToValueAtTime(0,AUDIO_CTX.currentTime+0.35);
+    o.start(); o.stop(AUDIO_CTX.currentTime+0.35);
+  } else if(type==='chicken'){
+    o.type='square'; [600,400,800,500].forEach((f,i)=>o.frequency.setValueAtTime(f,AUDIO_CTX.currentTime+i*0.04));
+    g.gain.setValueAtTime(0.12,AUDIO_CTX.currentTime); g.gain.linearRampToValueAtTime(0,AUDIO_CTX.currentTime+0.2);
+    o.start(); o.stop(AUDIO_CTX.currentTime+0.2);
   } else {
-    osc.type='sine'; osc.frequency.setValueAtTime(400,ctx.currentTime);
-    osc.frequency.linearRampToValueAtTime(600,ctx.currentTime+0.15);
-    osc.frequency.linearRampToValueAtTime(400,ctx.currentTime+0.3);
-    gain.gain.setValueAtTime(0.2,ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(0,ctx.currentTime+0.35);
-    osc.start(); osc.stop(ctx.currentTime+0.35);
-  }
-}
-
-function playSound(type) {
-  if (customSounds[type]) {
-    const audio = new Audio(customSounds[type]);
-    audio.volume = 0.5; audio.play();
-  } else {
-    synthBark(type);
+    o.type='sine'; o.frequency.setValueAtTime(400,AUDIO_CTX.currentTime);
+    o.frequency.linearRampToValueAtTime(650,AUDIO_CTX.currentTime+0.12);
+    g.gain.setValueAtTime(0.18,AUDIO_CTX.currentTime); g.gain.linearRampToValueAtTime(0,AUDIO_CTX.currentTime+0.25);
+    o.start(); o.stop(AUDIO_CTX.currentTime+0.25);
   }
 }
 
 function bark(type) {
-  counts[type]++;
-  document.getElementById(type+'Count').textContent = counts[type];
-  document.getElementById('totalClicks').textContent = '共叫了 '+(counts.dog+counts.chicken+counts.cat)+' 次';
-  playSound(type);
-
-  // Floating effect
-  const el = document.getElementById(type+'Count');
-  const rect = el.getBoundingClientRect();
-  const float = document.createElement('div');
-  float.className = 'bark-effect';
-  float.textContent = type==='dog'?'汪!':'咯!';
-  float.style.left = rect.left + rect.width/2 - 20 + 'px';
-  float.style.top = rect.top + 'px';
-  float.style.color = type==='dog'?'var(--gold)':'var(--pink)';
-  document.body.appendChild(float);
-  setTimeout(()=>float.remove(), 1000);
-
-  saveCounts();
+  if(SND[type]){ const a=new Audio(SND[type]); a.volume=0.5; a.play(); }
+  else synth(type);
 }
 
-function secretMeow() {
-  if (!catFound) { catFound = true; document.getElementById('secretCat').classList.add('found'); }
-  counts.cat++;
-  playSound('cat');
-  document.getElementById('totalClicks').textContent = '共叫了 '+(counts.dog+counts.chicken+counts.cat)+' 次';
-  alert('🐱 喵！你发现了隐藏的猫！猫偷偷叫了 '+counts.cat+' 次');
-  saveCounts();
-}
+// ─── CORE ───
+function handleClick(type) {
+  if(type==='cat'){ catTap(); return; }
+  if(R[type].dead) return;
 
-function resetAll() {
-  if (!confirm('重置所有计数？')) return;
-  counts = { dog:0, chicken:0, cat:0 };
-  document.getElementById('dogCount').textContent = '0';
-  document.getElementById('chickenCount').textContent = '0';
-  document.getElementById('totalClicks').textContent = '共叫了 0 次';
-  catFound = false;
-  document.getElementById('secretCat').classList.remove('found');
-  localStorage.removeItem('dagoujiao_counts');
-}
+  C[type]++; updateCount(type); bark(type); spawnFloat(type);
 
-function saveCounts() {
-  localStorage.setItem('dagoujiao_counts', JSON.stringify(counts));
-}
+  // Rapid detection
+  R[type].count++; clearTimeout(R[type].timer);
 
-function loadCounts() {
-  try {
-    const saved = JSON.parse(localStorage.getItem('dagoujiao_counts'));
-    if (saved) {
-      counts = saved;
-      document.getElementById('dogCount').textContent = counts.dog||0;
-      document.getElementById('chickenCount').textContent = counts.chicken||0;
-      document.getElementById('totalClicks').textContent = '共叫了 '+(counts.dog+counts.chicken+counts.cat)+' 次';
-      if (counts.cat>0) { catFound=true; document.getElementById('secretCat').classList.add('found'); }
+  if(R[type].count >= THRESHOLD) {
+    if(!R[type].warned) {
+      R[type].warned = true;
+      document.getElementById(type+'Warn').classList.remove('hidden');
+    } else {
+      kill(type); return;
     }
-  } catch(e) {}
+  }
+
+  R[type].timer = setTimeout(()=>{
+    R[type].count=0; R[type].warned=false;
+    document.getElementById(type+'Warn').classList.add('hidden');
+  }, RECOVER);
+
+  // Unlock cat at 100
+  if(type==='dog' && C.dog >= 100 && !catUnlocked) unlockCat();
+
+  save();
 }
 
-function loadCustomSound(type, input) {
-  const file = input.files[0];
-  if (!file) return;
-  customSounds[type] = URL.createObjectURL(file);
+function kill(type) {
+  R[type].dead = true;
+  document.getElementById(type+'Img').src = `/static/images/${type}-dead.svg`;
+  document.getElementById(type+'Img').classList.add('dead-img');
+  document.getElementById(type+'Warn').classList.add('hidden');
+  document.getElementById(type+'Dead').classList.remove('hidden');
+  C[type] = 0; updateCount(type); save();
 }
 
-function loadCustomImage(type, input) {
-  const file = input.files[0];
-  if (!file) return;
-  const url = URL.createObjectURL(file);
-  document.getElementById(type+'Img').src = url;
+function revive(type) {
+  R[type] = { count:0, timer:null, warned:false, dead:false };
+  document.getElementById(type+'Img').src = `/static/images/${type}.svg`;
+  document.getElementById(type+'Img').classList.remove('dead-img');
+  document.getElementById(type+'Dead').classList.add('hidden');
+  updateCount(type);
 }
 
-// Load saved counts on page load
-loadCounts();
+function catTap() {
+  C.cat++; updateCount('cat'); bark('cat'); spawnFloat('cat'); save();
+}
+
+function unlockCat() {
+  catUnlocked = true;
+  document.getElementById('navCat').style.display = 'block';
+  const b=document.createElement('div'); b.className='unlock-banner';
+  b.textContent='🐱 哈基米登场！隐藏角色解锁！'; document.body.prepend(b);
+  setTimeout(()=>b.remove(),3000);
+  localStorage.setItem('dj_cat','1');
+}
+
+// ─── UI ───
+function updateCount(type) {
+  document.getElementById(type+'Count').textContent = C[type];
+}
+
+function spawnFloat(type) {
+  const t={dog:'汪!',chicken:'咯!',cat:'喵~'}, c={dog:'var(--gold)',chicken:'var(--pink)',cat:'var(--green)'};
+  const s=document.getElementById(type+'Floats');
+  const e=document.createElement('span'); e.className='float';
+  e.textContent=t[type]; e.style.color=c[type];
+  s.appendChild(e); setTimeout(()=>e.remove(),900);
+}
+
+function switchTab(type) {
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+type).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ─── PERSIST ───
+function save() { localStorage.setItem('dj_c',JSON.stringify(C)); }
+function load() {
+  try{
+    const s=JSON.parse(localStorage.getItem('dj_c'));
+    if(s){ C.dog=s.dog||0; C.chicken=s.chicken||0; C.cat=s.cat||0; }
+    if(localStorage.getItem('dj_cat')==='1'){ catUnlocked=true; document.getElementById('navCat').style.display='block'; }
+    updateCount('dog'); updateCount('chicken'); updateCount('cat');
+  }catch(e){}
+}
+
+// ─── CUSTOM ───
+function loadImg(type,input) { const f=input.files[0]; if(f) document.getElementById(type+'Img').src=URL.createObjectURL(f); }
+function loadSnd(type,input) { const f=input.files[0]; if(f) SND[type]=URL.createObjectURL(f); }
+
+// Preload custom audio
+['dog','chicken','cat'].forEach(t=>{
+  const a=new Audio(); a.oncanplaythrough=()=>{SND[t]=`/static/sounds/${t}-${t==='dog'?'bark':t==='chicken'?'cluck':'meow'}.mp3`;};
+  a.src=`/static/sounds/${t}-${t==='dog'?'bark':t==='chicken'?'cluck':'meow'}.mp3`;
+});
+
+load();
 </script>
-
 </body>
 </html>
