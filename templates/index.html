@@ -162,11 +162,33 @@ function bark(type) {
 }
 
 // ─── CORE ───
+let dogRestTimer = null;
+const DOG_REST_DELAY = 3000; // 3s idle → rest
+
+function dogRest() {
+  if(!R.dog.dead && dogRestTimer===null) {
+    document.getElementById('dogImg').src = '/static/images/dog-rest.svg';
+  }
+}
+
+function dogWake() {
+  if(!R.dog.dead) {
+    document.getElementById('dogImg').src = '/static/images/dog.svg';
+  }
+}
+
 function handleClick(type) {
   if(type==='cat'){ catTap(); return; }
   if(R[type].dead) return;
 
   C[type]++; updateCount(type); bark(type); spawnFloat(type);
+
+  // Dog rest/wake
+  if(type==='dog') {
+    dogWake();
+    clearTimeout(dogRestTimer);
+    dogRestTimer = setTimeout(dogRest, DOG_REST_DELAY);
+  }
 
   // Rapid detection
   R[type].count++; clearTimeout(R[type].timer);
@@ -205,6 +227,7 @@ function revive(type) {
   document.getElementById(type+'Img').src = `/static/images/${type}.svg`;
   document.getElementById(type+'Img').classList.remove('dead-img');
   document.getElementById(type+'Dead').classList.add('hidden');
+  if(type==='dog'){ clearTimeout(dogRestTimer); dogRestTimer=null; }
   updateCount(type);
 }
 
