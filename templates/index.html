@@ -68,7 +68,7 @@ body { background:var(--bg); color:#fff; font-family:'Segoe UI','Noto Sans SC',s
 <div id="tab-dog" class="tab active">
   <div class="wrap">
     <div class="animal-area">
-      <img id="dogImg" src="/static/images/0.png" class="animal-img" onclick="handleClick('dog')" onerror="this.onerror=null;this.src='/static/images/0.png'">
+      <img id="dogImg" src="/static/images/0.jpg" class="animal-img" onclick="handleClick('dog')" onerror="this.onerror=null;this.src='/static/images/0.jpg'">
       <div class="floats" id="dogFloats"></div>
     </div>
     <div class="counter">大狗叫了 <span id="dogCount">0</span> 次</div>
@@ -85,7 +85,7 @@ body { background:var(--bg); color:#fff; font-family:'Segoe UI','Noto Sans SC',s
 <div id="tab-chicken" class="tab">
   <div class="wrap">
     <div class="animal-area">
-      <img id="chickenImg" src="/static/images/1.0.png" class="animal-img" onclick="handleClick('chicken')" onerror="this.onerror=null;this.src='/static/images/1.0.png'">
+      <img id="chickenImg" src="/static/images/1.0.jpg" class="animal-img" onclick="handleClick('chicken')" onerror="this.onerror=null;this.src='/static/images/1.0.jpg'">
       <div class="floats" id="chickenFloats"></div>
     </div>
     <div class="counter">叮咚鸡叫了 <span id="chickenCount">0</span> 次</div>
@@ -102,7 +102,7 @@ body { background:var(--bg); color:#fff; font-family:'Segoe UI','Noto Sans SC',s
 <div id="tab-cat" class="tab">
   <div class="wrap">
     <div class="animal-area">
-      <img id="catImg" src="/static/images/2.0.png" class="animal-img" onclick="handleClick('cat')" onerror="this.onerror=null;this.src='/static/images/2.0.png'">
+      <img id="catImg" src="/static/images/2.0.jpg" class="animal-img" onclick="handleClick('cat')" onerror="this.onerror=null;this.src='/static/images/2.0.jpg'">
       <div class="floats" id="catFloats"></div>
     </div>
     <div class="counter">哈基米叫了 <span id="catCount">0</span> 次</div>
@@ -167,13 +167,13 @@ const DOG_REST_DELAY = 3000; // 3s idle → rest
 
 function dogRest() {
   if(!R.dog.dead && dogRestTimer===null) {
-    document.getElementById('dogImg').src = '/static/images/1.png';
+    document.getElementById('dogImg').src = '/static/images/1.jpg';
   }
 }
 
 function dogWake() {
   if(!R.dog.dead) {
-    document.getElementById('dogImg').src = '/static/images/0.png';
+    document.getElementById('dogImg').src = '/static/images/0.jpg';
   }
 }
 
@@ -215,7 +215,7 @@ function handleClick(type) {
 
 function kill(type) {
   R[type].dead = true;
-  const deadMap = {dog:'3.png', chicken:'1.1.png'};
+  const deadMap = {dog:'3.jpg', chicken:'1.1.png'};
   document.getElementById(type+'Img').src = '/static/images/'+deadMap[type];
   document.getElementById(type+'Img').classList.add('dead-img');
   document.getElementById(type+'Warn').classList.add('hidden');
@@ -225,7 +225,7 @@ function kill(type) {
 
 function revive(type) {
   R[type] = { count:0, timer:null, warned:false, dead:false };
-  const normalMap = {dog:'0.png', chicken:'1.0.png', cat:'2.0.png'};
+  const normalMap = {dog:'0.jpg', chicken:'1.0.jpg', cat:'2.0.jpg'};
   document.getElementById(type+'Img').src = '/static/images/'+normalMap[type];
   document.getElementById(type+'Img').classList.remove('dead-img');
   document.getElementById(type+'Dead').classList.add('hidden');
@@ -282,9 +282,10 @@ function loadImg(type,input) { const f=input.files[0]; if(f) document.getElement
 function loadSnd(type,input) { const f=input.files[0]; if(f) SND[type]=URL.createObjectURL(f); }
 
 // Preload custom audio
+const AUDIO_FILES = {dog:'大狗叫.m4a', chicken:'叮咚鸡.m4a', cat:'哈基米.m4a'};
 ['dog','chicken','cat'].forEach(t=>{
-  const a=new Audio(); a.oncanplaythrough=()=>{SND[t]=`/static/sounds/${t}-${t==='dog'?'bark':t==='chicken'?'cluck':'meow'}.mp3`;};
-  a.src=`/static/sounds/${t}-${t==='dog'?'bark':t==='chicken'?'cluck':'meow'}.mp3`;
+  const a=new Audio(); a.oncanplaythrough=()=>{SND[t]=`/static/sounds/${AUDIO_FILES[t]}`;};
+  a.src=`/static/sounds/${AUDIO_FILES[t]}`;
 });
 
 load();
