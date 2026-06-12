@@ -305,6 +305,8 @@ function loadImg(type,input) { const f=input.files[0]; if(f) document.getElement
 function loadSnd(type,input) { const f=input.files[0]; if(f){ SOUND_SRCS[type]=URL.createObjectURL(f); } }
 
 const SOUND_SRCS = {dog:'/static/sounds/dog.mp3', chicken:'/static/sounds/chicken.mp3', cat:'/static/sounds/cat.mp3'};
+// Preload audio
+for(let t in SOUND_SRCS){ const a=new Audio(SOUND_SRCS[t]); a.preload='auto'; a.load(); }
 
 function speak(type) {
   const a = new Audio(SOUND_SRCS[type]);
