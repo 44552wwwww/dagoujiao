@@ -188,7 +188,7 @@ function synth(type) {
 
 function bark(type) {
   if(SND[type]){ const a=new Audio(SND[type]); a.volume=1.0; a.play(); }
-  else synth(type);
+  else speak(type);
 }
 
 // ─── CORE ───
@@ -316,7 +316,14 @@ function load() {
 function loadImg(type,input) { const f=input.files[0]; if(f) document.getElementById(type+'Img').src=URL.createObjectURL(f); }
 function loadSnd(type,input) { const f=input.files[0]; if(f) SND[type]=URL.createObjectURL(f); }
 
-// All sounds use built-in synth. Upload custom audio via ⚙️ settings.
+// Use browser speech to say animal sounds
+const WORDS = {dog:'汪汪汪', chicken:'咯咯咯', cat:'喵喵喵'};
+function speak(type) {
+  const u = new SpeechSynthesisUtterance(WORDS[type]);
+  u.rate = 1.5; u.pitch = type==='dog'?0.5:type==='chicken'?2.0:1.2;
+  u.volume = 1.0;
+  speechSynthesis.speak(u);
+}
 
 load();
 </script>
