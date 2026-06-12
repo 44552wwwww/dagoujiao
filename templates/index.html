@@ -41,13 +41,20 @@ body { background:var(--bg); color:#fff; font-family:'Segoe UI','Noto Sans SC',s
 .unlock-banner { position:fixed; top:0; left:0; right:0; background:linear-gradient(135deg,var(--gold),var(--green)); color:#1a1a24; padding:18px; font-size:1.3em; font-weight:900; z-index:999; animation:slideDown .5s; text-align:center; }
 @keyframes slideDown { 0%{transform:translateY(-100%)} 100%{transform:translateY(0)} }
 
-.upload-box { background:var(--card); border-radius:14px; padding:18px; margin:24px 0; text-align:left; }
-.upload-box summary { cursor:pointer; color:#888; font-size:0.9em; margin-bottom:10px; }
 .upload-row { display:flex; align-items:center; gap:8px; margin:6px 0; font-size:0.82em; color:#888; }
 .upload-row label { width:50px; text-align:right; flex-shrink:0; }
 .upload-row input[type="file"] { flex:1; }
 
 .footer { color:#444; font-size:0.75em; margin:40px 0 20px; }
+
+.settings-btn { position:fixed; top:12px; right:16px; z-index:200; font-size:1.3em; cursor:pointer; opacity:0.5; transition:all .25s; }
+.settings-btn:hover { opacity:1; transform:rotate(60deg); }
+.settings-modal { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); z-index:300; align-items:center; justify-content:center; }
+.settings-modal.show { display:flex; }
+.settings-box { background:var(--card); border:1px solid #333; border-radius:16px; padding:28px 24px; max-width:420px; width:90%; max-height:80vh; overflow-y:auto; }
+.settings-box h3 { color:var(--gold); margin-bottom:16px; }
+.settings-close { float:right; cursor:pointer; color:#888; font-size:1.2em; }
+.settings-close:hover { color:#fff; }
 
 @media(max-width:600px) {
   .animal-img { width:160px; height:160px; }
@@ -58,6 +65,7 @@ body { background:var(--bg); color:#fff; font-family:'Segoe UI','Noto Sans SC',s
 </head>
 <body>
 
+<div class="settings-btn" onclick="toggleSettings()">⚙️</div>
 <div class="nav">
   <button class="active" onclick="switchTab('dog')">🐕 大狗叫</button>
   <button onclick="switchTab('chicken')">🐔 叮咚鸡</button>
@@ -110,16 +118,20 @@ body { background:var(--bg); color:#fff; font-family:'Segoe UI','Noto Sans SC',s
   </div>
 </div>
 
-<!-- Upload (all tabs share) -->
-<div class="wrap"><details class="upload-box">
-  <summary>🎨 自定义图片和声音（点开设置）</summary>
-  <div class="upload-row"><label>狗图片</label><input type="file" accept="image/*" onchange="loadImg('dog',this)"></div>
-  <div class="upload-row"><label>狗叫声</label><input type="file" accept="audio/*" onchange="loadSnd('dog',this)"></div>
-  <div class="upload-row"><label>鸡图片</label><input type="file" accept="image/*" onchange="loadImg('chicken',this)"></div>
-  <div class="upload-row"><label>鸡叫声</label><input type="file" accept="audio/*" onchange="loadSnd('chicken',this)"></div>
-  <div class="upload-row"><label>猫图片</label><input type="file" accept="image/*" onchange="loadImg('cat',this)"></div>
-  <div class="upload-row"><label>猫叫声</label><input type="file" accept="audio/*" onchange="loadSnd('cat',this)"></div>
-</details></div>
+<!-- Settings Modal -->
+<div class="settings-modal" id="settingsModal" onclick="if(event.target===this)toggleSettings()">
+  <div class="settings-box">
+    <span class="settings-close" onclick="toggleSettings()">✕</span>
+    <h3>🎨 自定义图片和声音</h3>
+    <div class="upload-row"><label>狗图片</label><input type="file" accept="image/*" onchange="loadImg('dog',this)"></div>
+    <div class="upload-row"><label>狗叫声</label><input type="file" accept="audio/*" onchange="loadSnd('dog',this)"></div>
+    <div class="upload-row"><label>鸡图片</label><input type="file" accept="image/*" onchange="loadImg('chicken',this)"></div>
+    <div class="upload-row"><label>鸡叫声</label><input type="file" accept="audio/*" onchange="loadSnd('chicken',this)"></div>
+    <div class="upload-row"><label>猫图片</label><input type="file" accept="image/*" onchange="loadImg('cat',this)"></div>
+    <div class="upload-row"><label>猫叫声</label><input type="file" accept="audio/*" onchange="loadSnd('cat',this)"></div>
+    <p style="color:#666;font-size:0.75em;margin-top:10px;">上传的文件仅在当前浏览器生效，刷新后恢复默认</p>
+  </div>
+</div>
 
 <div class="footer">王微出品 · 大狗叫</div>
 
@@ -260,6 +272,10 @@ function spawnFloat(type) {
   const e=document.createElement('span'); e.className='float';
   e.textContent=t[type]; e.style.color=c[type];
   s.appendChild(e); setTimeout(()=>e.remove(),900);
+}
+
+function toggleSettings() {
+  document.getElementById('settingsModal').classList.toggle('show');
 }
 
 function switchTab(type) {
