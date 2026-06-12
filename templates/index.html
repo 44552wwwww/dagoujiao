@@ -156,22 +156,22 @@ function synth(type) {
   if(type==='dog'){
     o.type='sawtooth'; o.frequency.setValueAtTime(280,ctx.currentTime);
     o.frequency.linearRampToValueAtTime(60,ctx.currentTime+0.3);
-    g.gain.setValueAtTime(0.3,ctx.currentTime); g.gain.linearRampToValueAtTime(0,ctx.currentTime+0.35);
+    g.gain.setValueAtTime(0.8,ctx.currentTime); g.gain.linearRampToValueAtTime(0,ctx.currentTime+0.35);
     o.start(); o.stop(ctx.currentTime+0.35);
   } else if(type==='chicken'){
     o.type='square'; [600,400,800,500].forEach((f,i)=>o.frequency.setValueAtTime(f,ctx.currentTime+i*0.04));
-    g.gain.setValueAtTime(0.12,ctx.currentTime); g.gain.linearRampToValueAtTime(0,ctx.currentTime+0.2);
+    g.gain.setValueAtTime(0.5,ctx.currentTime); g.gain.linearRampToValueAtTime(0,ctx.currentTime+0.2);
     o.start(); o.stop(ctx.currentTime+0.2);
   } else {
     o.type='sine'; o.frequency.setValueAtTime(400,ctx.currentTime);
     o.frequency.linearRampToValueAtTime(650,ctx.currentTime+0.12);
-    g.gain.setValueAtTime(0.18,ctx.currentTime); g.gain.linearRampToValueAtTime(0,ctx.currentTime+0.25);
+    g.gain.setValueAtTime(0.6,ctx.currentTime); g.gain.linearRampToValueAtTime(0,ctx.currentTime+0.25);
     o.start(); o.stop(ctx.currentTime+0.25);
   }
 }
 
 function bark(type) {
-  if(SND[type]){ const a=new Audio(SND[type]); a.volume=0.5; a.play(); }
+  if(SND[type]){ const a=new Audio(SND[type]); a.volume=1.0; a.play(); }
   else synth(type);
 }
 
