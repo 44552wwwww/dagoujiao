@@ -168,8 +168,9 @@ let dogRestTimer = null;
 const DOG_REST_DELAY = 3000; // 3s idle → rest
 
 function dogRest() {
-  if(!R.dog.dead && dogRestTimer===null) {
+  if(!R.dog.dead) {
     document.getElementById('dogImg').src = '/static/images/1.jpg';
+    dogRestTimer = null;
   }
 }
 
