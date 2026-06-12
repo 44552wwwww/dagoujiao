@@ -144,8 +144,7 @@ const R = {
   chicken:{ count:0, timer:null, warned:false, dead:false }
 };
 const THRESHOLD = 20, WINDOW = 1500, RECOVER = 5000;
-const SND = { dog:null, chicken:null, cat:null };
-let AUDIO_CTX = null;
+// SOUNDS defined below with real mp3 files
 function getCtx(){ if(!AUDIO_CTX) AUDIO_CTX=new (window.AudioContext||window.webkitAudioContext)(); return AUDIO_CTX; }
 
 // ─── AUDIO ───
@@ -186,10 +185,7 @@ function synth(type) {
   }
 }
 
-function bark(type) {
-  if(SND[type]){ const a=new Audio(SND[type]); a.volume=1.0; a.play(); }
-  else speak(type);
-}
+function bark(type) { speak(type); }
 
 // ─── CORE ───
 let dogRestTimer = null;
@@ -307,44 +303,20 @@ function load() {}
 
 // ─── CUSTOM ───
 function loadImg(type,input) { const f=input.files[0]; if(f) document.getElementById(type+'Img').src=URL.createObjectURL(f); }
-function loadSnd(type,input) { const f=input.files[0]; if(f) SND[type]=URL.createObjectURL(f); }
+function loadSnd(type,input) { const f=input.files[0]; if(f){ SOUNDS[type].src=URL.createObjectURL(f); } }
 
-// AudioContext buffer-based short sound clips
-function getCtx(){ if(!AUDIO_CTX) AUDIO_CTX=new (window.AudioContext||window.webkitAudioContext)(); return AUDIO_CTX; }
+// Preload real mp3 sounds
+const SOUNDS = {
+  dog: new Audio('/static/sounds/dog.mp3'),
+  chicken: new Audio('/static/sounds/chicken.mp3'),
+  cat: new Audio('/static/sounds/cat.mp3'),
+};
+for(let t in SOUNDS){ SOUNDS[t].preload='auto'; SOUNDS[t].volume=0.8; }
 
-function makeNoise(type) {
-  const ctx=getCtx();
-  const duration = type==='dog'?0.3:type==='chicken'?0.15:0.4;
-  const buf = ctx.createBuffer(1, ctx.sampleRate*duration, ctx.sampleRate);
-  const d = buf.getChannelData(0);
-  if(type==='dog'){
-    for(let i=0;i<d.length;i++){
-      const t=i/ctx.sampleRate;
-      d[i]=(Math.random()*2-1)*Math.exp(-t*8)*(0.7+0.3*Math.sin(t*600/(1+t*10)));
-    }
-  } else if(type==='chicken'){
-    for(let i=0;i<d.length;i++){
-      const t=i/ctx.sampleRate;
-      const pulse=Math.sin(t*800)*Math.exp(-t*20);
-      d[i]=pulse*0.5+(Math.random()*2-1)*0.3*Math.exp(-t*15);
-    }
-  } else {
-    for(let i=0;i<d.length;i++){
-      const t=i/ctx.sampleRate;
-      d[i]=Math.sin(t*500*(1+t))*Math.exp(-t*5)*0.5+(Math.random()*2-1)*0.2*Math.exp(-t*8);
-    }
-  }
-  return buf;
-}
-
-const NOISES = {};
 function speak(type) {
-  if(!NOISES[type]) NOISES[type]=makeNoise(type);
-  const ctx=getCtx();
-  const src=ctx.createBufferSource(); src.buffer=NOISES[type];
-  const g=ctx.createGain(); g.gain.setValueAtTime(0.8,ctx.currentTime);
-  src.connect(g); g.connect(ctx.destination);
-  src.start();
+  const a = SOUNDS[type].cloneNode();
+  a.volume = 0.8;
+  a.play().catch(()=>{});
 }
 
 load();
