@@ -133,26 +133,28 @@ const R = {
 };
 const THRESHOLD = 20, WINDOW = 1500, RECOVER = 5000;
 const SND = { dog:null, chicken:null, cat:null };
-const AUDIO_CTX = new (window.AudioContext||window.webkitAudioContext)();
+let AUDIO_CTX = null;
+function getCtx(){ if(!AUDIO_CTX) AUDIO_CTX=new (window.AudioContext||window.webkitAudioContext)(); return AUDIO_CTX; }
 
 // ─── AUDIO ───
 function synth(type) {
-  const o=AUDIO_CTX.createOscillator(), g=AUDIO_CTX.createGain();
-  o.connect(g); g.connect(AUDIO_CTX.destination);
+  const ctx=getCtx();
+  const o=ctx.createOscillator(), g=ctx.createGain();
+  o.connect(g); g.connect(ctx.destination);
   if(type==='dog'){
-    o.type='sawtooth'; o.frequency.setValueAtTime(280,AUDIO_CTX.currentTime);
-    o.frequency.linearRampToValueAtTime(60,AUDIO_CTX.currentTime+0.3);
-    g.gain.setValueAtTime(0.3,AUDIO_CTX.currentTime); g.gain.linearRampToValueAtTime(0,AUDIO_CTX.currentTime+0.35);
-    o.start(); o.stop(AUDIO_CTX.currentTime+0.35);
+    o.type='sawtooth'; o.frequency.setValueAtTime(280,ctx.currentTime);
+    o.frequency.linearRampToValueAtTime(60,ctx.currentTime+0.3);
+    g.gain.setValueAtTime(0.3,ctx.currentTime); g.gain.linearRampToValueAtTime(0,ctx.currentTime+0.35);
+    o.start(); o.stop(ctx.currentTime+0.35);
   } else if(type==='chicken'){
-    o.type='square'; [600,400,800,500].forEach((f,i)=>o.frequency.setValueAtTime(f,AUDIO_CTX.currentTime+i*0.04));
-    g.gain.setValueAtTime(0.12,AUDIO_CTX.currentTime); g.gain.linearRampToValueAtTime(0,AUDIO_CTX.currentTime+0.2);
-    o.start(); o.stop(AUDIO_CTX.currentTime+0.2);
+    o.type='square'; [600,400,800,500].forEach((f,i)=>o.frequency.setValueAtTime(f,ctx.currentTime+i*0.04));
+    g.gain.setValueAtTime(0.12,ctx.currentTime); g.gain.linearRampToValueAtTime(0,ctx.currentTime+0.2);
+    o.start(); o.stop(ctx.currentTime+0.2);
   } else {
-    o.type='sine'; o.frequency.setValueAtTime(400,AUDIO_CTX.currentTime);
-    o.frequency.linearRampToValueAtTime(650,AUDIO_CTX.currentTime+0.12);
-    g.gain.setValueAtTime(0.18,AUDIO_CTX.currentTime); g.gain.linearRampToValueAtTime(0,AUDIO_CTX.currentTime+0.25);
-    o.start(); o.stop(AUDIO_CTX.currentTime+0.25);
+    o.type='sine'; o.frequency.setValueAtTime(400,ctx.currentTime);
+    o.frequency.linearRampToValueAtTime(650,ctx.currentTime+0.12);
+    g.gain.setValueAtTime(0.18,ctx.currentTime); g.gain.linearRampToValueAtTime(0,ctx.currentTime+0.25);
+    o.start(); o.stop(ctx.currentTime+0.25);
   }
 }
 
@@ -285,6 +287,7 @@ function loadSnd(type,input) { const f=input.files[0]; if(f) SND[type]=URL.creat
 const AUDIO_FILES = {dog:'大狗叫.m4a', chicken:'叮咚鸡.m4a', cat:'哈基米.m4a'};
 ['dog','chicken','cat'].forEach(t=>{
   const a=new Audio(); a.oncanplaythrough=()=>{SND[t]=`/static/sounds/${AUDIO_FILES[t]}`;};
+  a.onerror=()=>{SND[t]=null;}; // fallback to synth
   a.src=`/static/sounds/${AUDIO_FILES[t]}`;
 });
 
