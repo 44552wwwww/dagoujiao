@@ -274,7 +274,7 @@ function unlockCat() {
   const b=document.createElement('div'); b.className='unlock-banner';
   b.textContent='🐱 哈基米登场！隐藏角色解锁！'; document.body.prepend(b);
   setTimeout(()=>b.remove(),3000);
-  localStorage.setItem('dj_cat','1');
+  // cat unlocked for this session only
 }
 
 // ─── UI ───
@@ -302,15 +302,8 @@ function switchTab(type) {
 }
 
 // ─── PERSIST ───
-function save() { localStorage.setItem('dj_c',JSON.stringify(C)); }
-function load() {
-  try{
-    const s=JSON.parse(localStorage.getItem('dj_c'));
-    if(s){ C.dog=s.dog||0; C.chicken=s.chicken||0; C.cat=s.cat||0; }
-    if(localStorage.getItem('dj_cat')==='1'){ catUnlocked=true; document.getElementById('navCat').style.display='block'; }
-    updateCount('dog'); updateCount('chicken'); updateCount('cat');
-  }catch(e){}
-}
+function save() {} // no persistence, resets on page close
+function load() {}
 
 // ─── CUSTOM ───
 function loadImg(type,input) { const f=input.files[0]; if(f) document.getElementById(type+'Img').src=URL.createObjectURL(f); }
