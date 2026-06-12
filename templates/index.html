@@ -300,13 +300,7 @@ function load() {
 function loadImg(type,input) { const f=input.files[0]; if(f) document.getElementById(type+'Img').src=URL.createObjectURL(f); }
 function loadSnd(type,input) { const f=input.files[0]; if(f) SND[type]=URL.createObjectURL(f); }
 
-// Preload custom audio
-const AUDIO_FILES = {dog:'大狗叫.m4a', chicken:'叮咚鸡.m4a', cat:'哈基米.m4a'};
-['dog','chicken','cat'].forEach(t=>{
-  const a=new Audio(); a.oncanplaythrough=()=>{SND[t]=`/static/sounds/${AUDIO_FILES[t]}`;};
-  a.onerror=()=>{SND[t]=null;}; // fallback to synth
-  a.src=`/static/sounds/${AUDIO_FILES[t]}`;
-});
+// All sounds use built-in synth. Upload custom audio via ⚙️ settings.
 
 load();
 </script>
